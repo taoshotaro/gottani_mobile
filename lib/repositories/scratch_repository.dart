@@ -8,7 +8,7 @@ part 'scratch_repository.g.dart';
 
 @riverpod
 Stream<Scratch> scratchStream(Ref ref, String messageId) {
-  final supabase = ref.read(supabaseClientProvider);
+  final supabase = ref.watch(supabaseClientProvider);
 
   return supabase
       .from('scratch')

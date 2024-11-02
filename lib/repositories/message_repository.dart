@@ -10,7 +10,7 @@ part 'message_repository.g.dart';
 
 @riverpod
 Stream<Message> newMessageStream(Ref ref) {
-  final supabase = ref.read(supabaseClientProvider);
+  final supabase = ref.watch(supabaseClientProvider);
 
   final streamController = StreamController<Message>();
 
