@@ -9,6 +9,7 @@ import 'package:gottani_mobile/repositories/message_repository.dart';
 import 'package:gottani_mobile/screens/interactive/painter/grid_dots_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/scribble_widget.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/snapping_interactive_viewer.dart';
+import 'package:gottani_mobile/screens/sample/input_message_dialog.dart';
 
 @immutable
 @RoutePage()
@@ -66,6 +67,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
     });
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SnappingInteractiveViewer(
         key: viewerKey,
         child: Container(
@@ -78,15 +80,16 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(children: [
-          TextButton(
-            onPressed: () => ref
-                .read(messageRepositoryProvider)
-                .send('added: ${DateTime.now().toIso8601String()}'),
-            child: const Text('add'),
-          )
-        ]),
+      floatingActionButton: ElevatedButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const InputMessageDialog();
+            },
+          );
+        },
+        child: Text('Show Dialog'),
       ),
     );
   }
@@ -104,8 +107,8 @@ class _PositionedScribbleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: Random().nextDouble() * 1000,
-      top: Random().nextDouble() * 500,
+      left: Random().nextDouble() * 375,
+      top: Random().nextDouble() * 812,
       child: ScribbleWidget(
         id: message.id,
         content: message.content,

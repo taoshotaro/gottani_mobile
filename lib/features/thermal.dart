@@ -17,7 +17,7 @@ class ThermalThrottler {
     this.onScratchBegan,
     this.onScratchMoved,
     this.onScratchEnded,
-    this.interval = const Duration(milliseconds: 100),
+    this.interval = const Duration(milliseconds: 50),
     this.minHeatDelta = 0.0,
     this.maxHeatDelta = 1.0,
     this.heatDeltaScale = 1.0 / 100.0 / 60,
