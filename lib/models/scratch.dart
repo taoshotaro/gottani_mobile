@@ -6,10 +6,10 @@ part 'scratch.g.dart';
 @freezed
 class Scratch with _$Scratch {
   const factory Scratch({
-    required int id,
-    required int messageId,
-    required double dx,
-    required double dy,
+    required String id,
+    required String messageId,
+    required double x,
+    required double y,
     required String emoji,
     required double heatDelta,
     required DateTime createdAt,

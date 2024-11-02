@@ -6,7 +6,7 @@ part 'message.g.dart';
 @freezed
 class Message with _$Message {
   const factory Message({
-    required int id,
+    required String id,
     required String content,
     required double heat,
   }) = _Message;
