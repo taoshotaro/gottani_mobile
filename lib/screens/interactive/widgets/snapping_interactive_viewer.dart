@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:gottani_mobile/screens/interactive/painter/grid_dots_painter.dart';
+
+const _kScrollSpeed = 0.01;
 
 class SnappingInteractiveViewer extends StatefulWidget {
-  final Widget child;
+  final List<Widget> children;
   final double gridSize;
 
   SnappingInteractiveViewer(
-      {super.key, required this.child, this.gridSize = 46.0});
+      {super.key, required this.children, this.gridSize = 46.0});
 
   @override
   _SnappingInteractiveViewerState createState() =>
@@ -19,6 +22,7 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
   late final TransformationController _controller;
   late final double _gridSize;
   Offset _lastSnappedPosition = Offset.zero;
+  bool _interactive = false;
 
   late final Ticker _ticker;
   Duration _lastElapsed = Duration.zero;
@@ -40,12 +44,12 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
 
   void _onInteractionStart(ScaleStartDetails details) {
     print("DEBUGG: _onInteractionStart");
-    _ticker.stop();
+    _interactive = true;
   }
 
   void _onInteractionEnd(ScaleEndDetails details) {
     print("DEBUGG: _onInteractionEnd");
-    _ticker.start();
+    _interactive = false;
 
     // final matrix = _controller.value;
     // final translation = matrix.getTranslation();
@@ -90,12 +94,16 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
   }
 
   void _onTick(Duration elapsed) {
-    _controller.value *= Matrix4.translationValues(
-      0,
-      (elapsed - _lastElapsed).inMilliseconds * -0.01,
-      0,
-    );
-    _lastElapsed = elapsed;
+    if (!_interactive) {
+      _controller.value *= Matrix4.translationValues(
+        0,
+        (elapsed - _lastElapsed).inMilliseconds * -_kScrollSpeed,
+        0,
+      );
+    }
+    setState(() {
+      _lastElapsed = elapsed;
+    });
   }
 
   @override
@@ -108,7 +116,17 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
       onInteractionEnd: _onInteractionEnd,
       onInteractionUpdate: _onInteractionUpdate,
       onInteractionStart: _onInteractionStart,
-      child: widget.child,
+      child: Container(
+        width: MediaQuery.of(context).size.width + 200,
+        height: MediaQuery.of(context).size.height +
+            200 +
+            _lastElapsed.inMilliseconds * _kScrollSpeed,
+        color: Colors.black,
+        child: CustomPaint(
+          painter: GridDotsPainter(),
+          child: Stack(children: widget.children),
+        ),
+      ),
     );
   }
 }

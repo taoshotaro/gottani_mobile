@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gottani_mobile/models/message.dart';
 import 'package:gottani_mobile/repositories/message_repository.dart';
-import 'package:gottani_mobile/screens/interactive/painter/grid_dots_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/scribble_widget.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/snapping_interactive_viewer.dart';
 import 'package:gottani_mobile/screens/sample/input_message_dialog.dart';
@@ -70,15 +69,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
       resizeToAvoidBottomInset: false,
       body: SnappingInteractiveViewer(
         key: viewerKey,
-        child: Container(
-          width: MediaQuery.of(context).size.width + 200,
-          height: MediaQuery.of(context).size.height + 200,
-          color: Colors.black,
-          child: CustomPaint(
-            painter: GridDotsPainter(),
-            child: Stack(children: messageWidgets),
-          ),
-        ),
+        children: messageWidgets,
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
