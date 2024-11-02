@@ -11,6 +11,7 @@ class InputMessageDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messageText = useState('');
+    final sending = useState(false);
 
     return AlertDialog(
       contentPadding: EdgeInsets.all(12.0),
@@ -81,11 +82,17 @@ class InputMessageDialog extends HookConsumerWidget {
                   width: 30.0,
                   height: 30.0,
                 ),
-                onPressed: () {
-                  unawaited(ref
-                      .read(messageRepositoryProvider)
-                      .send(messageText.value));
-                },
+                onPressed: sending.value
+                    ? null
+                    : () async {
+                        sending.value = true;
+                        await ref
+                            .read(messageRepositoryProvider)
+                            .send(messageText.value);
+                        sending.value = false;
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context).pop();
+                      },
                 style: IconButton.styleFrom(
                   backgroundColor:
                       messageText.value.isEmpty ? Colors.grey : Colors.blue,

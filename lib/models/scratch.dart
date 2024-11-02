@@ -7,12 +7,13 @@ part 'scratch.g.dart';
 class Scratch with _$Scratch {
   const factory Scratch({
     required String id,
-    required String messageId,
+    required String message_id,
     required double x,
     required double y,
     required String emoji,
-    required double heatDelta,
-    required DateTime createdAt,
+    required double heat_delta,
+    required DateTime created_at,
+    required String unique_id,
   }) = _Scratch;
 
   factory Scratch.fromJson(Map<String, dynamic> json) =>
