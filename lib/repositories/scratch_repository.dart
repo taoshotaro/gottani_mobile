@@ -11,7 +11,7 @@ Stream<Scratch> scratchStream(Ref ref, String messageId) {
   final supabase = ref.read(supabaseClientProvider);
 
   return supabase
-      .from('Scratch')
+      .from('scratch')
       .stream(primaryKey: ['id'])
       .eq('message_id', messageId)
       .order('created_at', ascending: false)
@@ -32,7 +32,7 @@ class ScratchRepository extends _$ScratchRepository {
 
   Future<void> createScratch(String messageId, double x, double y, String emoji,
       double heatDelta) async {
-    final response = await supabase.from('Scratch').insert({
+    final response = await supabase.from('scratch').insert({
       'message_id': messageId,
       'x': x,
       'y': y,

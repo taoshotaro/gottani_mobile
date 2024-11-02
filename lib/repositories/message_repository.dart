@@ -36,25 +36,25 @@ Stream<Message> newMessageStream(Ref ref) {
 @riverpod
 class MessageRepository extends _$MessageRepository {
   @override
-  Future<void> build() async {
+  Future<List<Message>> build({required int count}) async {
     supabase = ref.watch(supabaseClientProvider);
+    final messages = await fetchMessages(count);
+
+    return messages;
   }
 
   late final SupabaseClient supabase;
 
   Future<List<Message>> fetchMessages(int count) async {
-    final response = await supabase.from('Message').select().limit(count);
+    final response = await supabase.from('message').select().limit(count);
 
     return response.map((json) => Message.fromJson(json)).toList();
   }
 
   Future<void> createMessage(String content) async {
-    final response = await supabase.from('Message').insert({
+    await supabase.from('message').insert({
       'content': content,
       'heat': 0,
     });
-    if (response.error != null) {
-      throw Exception(response.error!.message);
-    }
   }
 }
