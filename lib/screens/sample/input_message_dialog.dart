@@ -83,8 +83,8 @@ class InputMessageDialog extends HookConsumerWidget {
                 ),
                 onPressed: () {
                   unawaited(ref
-                      .read(messageRepositoryProvider(count: 1).notifier)
-                      .createMessage(messageText.value));
+                      .read(messageRepositoryProvider)
+                      .send(messageText.value));
                 },
                 style: IconButton.styleFrom(
                   backgroundColor:
