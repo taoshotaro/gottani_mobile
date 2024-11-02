@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gottani_mobile/repositories/message_repository.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class InputMessageDialog extends HookWidget {
+class InputMessageDialog extends HookConsumerWidget {
   const InputMessageDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final messageText = useState('');
 
     return AlertDialog(
@@ -78,7 +82,9 @@ class InputMessageDialog extends HookWidget {
                   height: 30.0,
                 ),
                 onPressed: () {
-                  // Add your send action here
+                  unawaited(ref
+                      .read(messageRepositoryProvider(count: 1).notifier)
+                      .createMessage(messageText.value));
                 },
                 style: IconButton.styleFrom(
                   backgroundColor:
