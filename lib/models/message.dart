@@ -9,6 +9,7 @@ class Message with _$Message {
     required String id,
     required String content,
     required double heat,
+    required DateTime created_at,
   }) = _Message;
 
   factory Message.fromJson(Map<String, dynamic> json) =>

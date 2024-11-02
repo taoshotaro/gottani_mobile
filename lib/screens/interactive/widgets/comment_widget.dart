@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class CommentWidget extends StatelessWidget {
-  const CommentWidget({super.key, this.shadow = false});
+  const CommentWidget({
+    super.key,
+    this.shadow = false,
+    required this.text,
+  });
 
   final bool shadow;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +39,7 @@ class CommentWidget extends StatelessWidget {
             ],
           ),
           child: Text(
-            "告られた",
+            text,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

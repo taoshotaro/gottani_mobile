@@ -34,7 +34,8 @@ Stream<Message> newMessageStream(Ref ref) {
 @riverpod
 Future<List<Message>> latestMessages(Ref ref, int count) async {
   final supabase = ref.watch(supabaseClientProvider);
-  final response = await supabase.from('message').select().limit(count);
+  final response =
+      await supabase.from('message').select().order("created_at").limit(count);
   return response.map((json) => Message.fromJson(json)).toList();
 }
 

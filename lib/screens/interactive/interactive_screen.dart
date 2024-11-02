@@ -32,7 +32,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
 
     unawaited(Future.microtask(() async {
       final messages = await ref.read(
-        latestMessagesProvider(20).future,
+        latestMessagesProvider(5).future,
       );
       if (!context.mounted) {
         return;
@@ -69,8 +69,8 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
       body: SnappingInteractiveViewer(
         key: viewerKey,
         child: Container(
-          width: 2000,
-          height: 2000,
+          width: MediaQuery.of(context).size.width + 200,
+          height: MediaQuery.of(context).size.height + 200,
           color: Colors.black,
           child: CustomPaint(
             painter: GridDotsPainter(),
