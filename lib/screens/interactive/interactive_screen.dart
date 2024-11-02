@@ -31,58 +31,42 @@ class InteractiveScreen extends HookWidget {
                 Positioned(
                   left: 100,
                   top: 50,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 500,
                   top: 100,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 900,
                   top: 100,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 1500,
                   top: 150,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 100,
                   top: 350,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 500,
                   top: 400,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 900,
                   top: 400,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
                 Positioned(
                   left: 1500,
                   top: 450,
-                  child: ScribbleWidget(
-                    child: CommentWidget(),
-                  ),
+                  child: ScribbleWidget(),
                 ),
               ],
             ),
