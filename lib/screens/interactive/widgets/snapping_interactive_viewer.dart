@@ -34,19 +34,19 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
   void _onInteractionEnd(ScaleEndDetails details) {
     print("DEBUGG: _onInteractionEnd");
 
-    final matrix = _controller.value;
-    final translation = matrix.getTranslation();
+    // final matrix = _controller.value;
+    // final translation = matrix.getTranslation();
 
-    // スナップ先の位置を計算
-    final snappedX = (translation.x / _gridSize).round() * _gridSize;
-    final snappedY = (translation.y / _gridSize).round() * _gridSize;
+    // // スナップ先の位置を計算
+    // final snappedX = (translation.x / _gridSize).round() * _gridSize;
+    // final snappedY = (translation.y / _gridSize).round() * _gridSize;
 
-    // スナップ位置に移動
-    setState(() {
-      _controller.value = Matrix4.identity()
-        ..translate(snappedX, snappedY)
-        ..scale(matrix.getMaxScaleOnAxis());
-    });
+    // // スナップ位置に移動
+    // setState(() {
+    //   _controller.value = Matrix4.identity()
+    //     ..translate(snappedX, snappedY)
+    //     ..scale(matrix.getMaxScaleOnAxis());
+    // });
   }
 
   void _onInteractionUpdate(ScaleUpdateDetails details) {
