@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gottani_mobile/datasources/supabase_client.dart';
 import 'package:gottani_mobile/models/scratch.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'scratch_repository.g.dart';
 
@@ -20,16 +21,17 @@ Stream<List<Scratch>> scratchStream(Ref ref, int messageId) {
 class ScratchRepository extends _$ScratchRepository {
   @override
   Future<void> build() async {
-    // 特に初期化の必要がない場合、空にしておきます。
+    supabase = ref.watch(supabaseClientProvider);
   }
 
-  Future<void> createScratch(int messageId, double dx, double dy, String emoji,
+  late final SupabaseClient supabase;
+
+  Future<void> createScratch(String messageId, double x, double y, String emoji,
       double heatDelta) async {
-    final response =
-        await ref.read(supabaseClientProvider).from('Scratch').insert({
+    final response = await supabase.from('Scratch').insert({
       'message_id': messageId,
-      'dx': dx,
-      'dy': dy,
+      'x': x,
+      'y': y,
       'emoji': emoji,
       'heat_delta': heatDelta,
       'created_at': DateTime.now().toIso8601String(),
