@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 class SnappingInteractiveViewer extends StatefulWidget {
@@ -13,26 +14,38 @@ class SnappingInteractiveViewer extends StatefulWidget {
       _SnappingInteractiveViewerState();
 }
 
-class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
-  late TransformationController _controller;
-  late double _gridSize;
+class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
+    with SingleTickerProviderStateMixin {
+  late final TransformationController _controller;
+  late final double _gridSize;
   Offset _lastSnappedPosition = Offset.zero;
+
+  late final Ticker _ticker;
+  Duration _lastElapsed = Duration.zero;
 
   @override
   void initState() {
     super.initState();
     _controller = TransformationController();
     _gridSize = widget.gridSize;
+    _ticker = createTicker(_onTick)..start();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _ticker.dispose();
     super.dispose();
+  }
+
+  void _onInteractionStart(ScaleStartDetails details) {
+    print("DEBUGG: _onInteractionStart");
+    _ticker.stop();
   }
 
   void _onInteractionEnd(ScaleEndDetails details) {
     print("DEBUGG: _onInteractionEnd");
+    _ticker.start();
 
     // final matrix = _controller.value;
     // final translation = matrix.getTranslation();
@@ -76,6 +89,15 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
     }
   }
 
+  void _onTick(Duration elapsed) {
+    _controller.value *= Matrix4.translationValues(
+      0,
+      (elapsed - _lastElapsed).inMilliseconds * -0.01,
+      0,
+    );
+    _lastElapsed = elapsed;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InteractiveViewer(
@@ -85,6 +107,7 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
       transformationController: _controller,
       onInteractionEnd: _onInteractionEnd,
       onInteractionUpdate: _onInteractionUpdate,
+      onInteractionStart: _onInteractionStart,
       child: widget.child,
     );
   }
