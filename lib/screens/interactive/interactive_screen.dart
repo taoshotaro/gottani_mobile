@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
   Widget build(BuildContext context) {
     ref.listen(newMessageStreamProvider.future, (_, message) {
       message.then((message) {
-        if (context.mounted) {
+        if (!context.mounted) {
           return;
         }
         messageWidgets.add(
@@ -103,6 +104,8 @@ class _PositionedScribbleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
+      left: Random().nextDouble() * 1000,
+      top: Random().nextDouble() * 500,
       child: ScribbleWidget(
         id: message.id,
         content: message.content,
