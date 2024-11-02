@@ -24,6 +24,7 @@ dependencies:
   # Networking
   dio: ^5.7.0
   retrofit: ^4.4.1
+  supabase_flutter: ^2.8.0
 
   # OS Integrations
   share_plus: ^10.1.1
