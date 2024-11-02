@@ -7,14 +7,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 part 'scratch_repository.g.dart';
 
 @riverpod
-Stream<List<Scratch>> scratchStream(Ref ref, int messageId) {
+Stream<Scratch> scratchStream(Ref ref, String messageId) {
   final supabase = ref.read(supabaseClientProvider);
 
   return supabase
       .from('Scratch')
       .stream(primaryKey: ['id'])
       .eq('message_id', messageId)
-      .map((data) => data.map((json) => Scratch.fromJson(json)).toList());
+      .order('created_at', ascending: false)
+      .limit(1)
+      .map((data) => data.isNotEmpty ? Scratch.fromJson(data.first) : null)
+      .where((scratch) => scratch != null)
+      .cast<Scratch>();
 }
 
 @riverpod
