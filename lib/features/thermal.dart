@@ -92,6 +92,17 @@ class ThermalThrottler {
     _prevUpdateTime = time;
   }
 
+  void cancel() {
+    final time = DateTime.now();
+    _timer?.cancel();
+    _timer = null;
+    onScratchEnded?.call(_lastPosition, time, 0.0);
+
+    _setLastState(Offset.zero, time);
+    _heat = 0.0;
+    _prevUpdateTime = time;
+  }
+
   void _onTick(Timer timer) {
     final currentTime = DateTime.now();
     if (currentTime.isAfter(_prevUpdateTime.add(interval))) {
