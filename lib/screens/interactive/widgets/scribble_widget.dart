@@ -69,6 +69,16 @@ class ScribbleWidget extends HookConsumerWidget {
       shakeOffset.value = Offset.zero;
     }
 
+    void onLongPressCanceled() {
+      throttler.value.cancel();
+
+      shouldAnimate.value = false;
+
+      scale.value = 1.0;
+      points.value = [];
+      shakeOffset.value = Offset.zero;
+    }
+
     void onLongPressMoveUpdate(LongPressMoveUpdateDetails details) {
       throttler.value.move(details.localPosition, ThermalTime.now());
 
@@ -92,6 +102,7 @@ class ScribbleWidget extends HookConsumerWidget {
             instance.onLongPressStart = onLongPressStart;
             instance.onLongPressEnd = onLongPressEnd;
             instance.onLongPressMoveUpdate = onLongPressMoveUpdate;
+            instance.onLongPressCancel = onLongPressCanceled;
           },
         ),
       },
