@@ -5,11 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gottani_mobile/features/thermal.dart';
+import 'package:gottani_mobile/models/message.dart';
 import 'package:gottani_mobile/screens/interactive/painter/glow_path_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/comment_widget.dart';
 
 class ScribbleWidget extends HookWidget {
-  const ScribbleWidget({super.key});
+  const ScribbleWidget({
+    super.key,
+    required this.id,
+    required this.content,
+    required this.initialHeat,
+  });
+
+  final String id;
+  final String content;
+  final double initialHeat;
 
   @override
   Widget build(BuildContext context) {

@@ -11,9 +11,7 @@ part 'message_repository.g.dart';
 @riverpod
 Stream<Message> newMessageStream(Ref ref) {
   final supabase = ref.watch(supabaseClientProvider);
-
   final streamController = StreamController<Message>();
-
   final subscription = supabase
       .channel('public:message')
       .onPostgresChanges(
@@ -34,24 +32,26 @@ Stream<Message> newMessageStream(Ref ref) {
 }
 
 @riverpod
-class MessageRepository extends _$MessageRepository {
-  @override
-  Future<List<Message>> build({required int count}) async {
-    supabase = ref.watch(supabaseClientProvider);
-    final messages = await fetchMessages(count);
+Future<List<Message>> latestMessages(Ref ref, int count) async {
+  final supabase = ref.watch(supabaseClientProvider);
+  final response = await supabase.from('message').select().limit(count);
+  return response.map((json) => Message.fromJson(json)).toList();
+}
 
-    return messages;
-  }
+@riverpod
+MessageRepository messageRepository(Ref ref) => MessageRepository(
+      supabase: ref.watch(supabaseClientProvider),
+    );
 
-  late final SupabaseClient supabase;
+class MessageRepository {
+  const MessageRepository({
+    required this.supabase,
+  });
 
-  Future<List<Message>> fetchMessages(int count) async {
-    final response = await supabase.from('message').select().limit(count);
+  final SupabaseClient supabase;
 
-    return response.map((json) => Message.fromJson(json)).toList();
-  }
-
-  Future<void> createMessage(String content) async {
+  /// メッセージの送信
+  Future<void> send(String content) async {
     await supabase.from('message').insert({
       'content': content,
       'heat': 0,
