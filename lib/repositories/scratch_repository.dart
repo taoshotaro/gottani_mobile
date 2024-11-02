@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gottani_mobile/datasources/supabase_client.dart';
 import 'package:gottani_mobile/models/scratch.dart';
@@ -7,18 +9,33 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 part 'scratch_repository.g.dart';
 
 @riverpod
-Stream<Scratch> scratchStream(Ref ref, String messageId) {
+Stream<Scratch> scratchStreamByMessageId(Ref ref, String messageId) {
   final supabase = ref.watch(supabaseClientProvider);
 
-  return supabase
-      .from('scratch')
-      .stream(primaryKey: ['id'])
-      .eq('message_id', messageId)
-      .order('created_at', ascending: false)
-      .limit(1)
-      .map((data) => data.isNotEmpty ? Scratch.fromJson(data.first) : null)
-      .where((scratch) => scratch != null)
-      .cast<Scratch>();
+  final streamController = StreamController<Scratch>();
+
+  final subscription = supabase
+      .channel('public:scratch:message_id=$messageId')
+      .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'scratch',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'message_id',
+            value: messageId,
+          ),
+          callback: (payload) {
+            streamController.add(Scratch.fromJson(payload.newRecord));
+          })
+      .subscribe();
+
+  ref.onDispose(() {
+    unawaited(subscription.unsubscribe());
+    unawaited(streamController.close());
+  });
+
+  return streamController.stream;
 }
 
 @riverpod
