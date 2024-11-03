@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gottani_mobile/widgets/emoji.dart';
 
 class FloatingEmoji extends StatefulWidget {
   final Offset position;
@@ -58,7 +59,7 @@ class _FloatingEmojiState extends State<FloatingEmoji>
           position: _positionAnimation,
           child: FadeTransition(
             opacity: _opacityAnimation,
-            child: Text(
+            child: Emoji(
               widget.emoji, // Emoji to display
               style: TextStyle(fontSize: 24),
             ),

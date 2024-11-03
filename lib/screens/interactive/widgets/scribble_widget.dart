@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gottani_mobile/repositories/scratch_repository.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/floating_emoji.dart';
+import 'package:gottani_mobile/widgets/emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:gottani_mobile/features/thermal.dart';
@@ -253,8 +254,9 @@ class ScribbleWidget extends HookConsumerWidget {
                   Gap(8),
                   ref.watch(messageEmojisStreamProvider(id)).when(
                         data: (emojis) => Row(
-                          children:
-                              emojis.map((emoji) => Text(emoji.emoji)).toList(),
+                          children: emojis
+                              .map((emoji) => Emoji(emoji.emoji))
+                              .toList(),
                         ),
                         error: (error, stack) => Text(''),
                         loading: () => Text(''),

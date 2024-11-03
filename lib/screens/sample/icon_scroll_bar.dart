@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gottani_mobile/widgets/emoji.dart';
 
 class IconScrollBar extends HookWidget {
   const IconScrollBar({
@@ -119,7 +120,7 @@ class IconScrollBar extends HookWidget {
                             ),
                           ),
                           Center(
-                            child: Text(
+                            child: Emoji(
                               emoji,
                               style: TextStyle(
                                 fontSize: 54.0 *
