@@ -7,13 +7,12 @@ class GridDotsPainter extends CustomPainter {
       ..color = Color(0xff4d4d4d)
       ..style = PaintingStyle.fill;
 
-    const double spacing = 46.0; // 点間の間隔
-    const double radius = 2.0; // 点の半径
+    const double spacing = 46.0;
+    const double radius = 2.0;
 
     for (double x = spacing; x < size.width; x += spacing) {
       for (double y = spacing; y < size.height; y += spacing) {
         canvas.drawCircle(Offset(x, y), radius, paint);
-        // canvas.draw
       }
     }
   }

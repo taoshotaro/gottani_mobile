@@ -52,52 +52,26 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
   }
 
   void _onInteractionStart(ScaleStartDetails details) {
-    print("DEBUGG: _onInteractionStart");
     _interactive = true;
   }
 
   void _onInteractionEnd(ScaleEndDetails details) {
-    print("DEBUGG: _onInteractionEnd");
     _interactive = false;
-
-    // final matrix = _controller.value;
-    // final translation = matrix.getTranslation();
-
-    // // スナップ先の位置を計算
-    // final snappedX = (translation.x / _gridSize).round() * _gridSize;
-    // final snappedY = (translation.y / _gridSize).round() * _gridSize;
-
-    // // スナップ位置に移動
-    // setState(() {
-    //   _controller.value = Matrix4.identity()
-    //     ..translate(snappedX, snappedY)
-    //     ..scale(matrix.getMaxScaleOnAxis());
-    // });
   }
 
   void _onInteractionUpdate(ScaleUpdateDetails details) {
-    print("DEBUGG: _onInteractionUpdate");
-
     final matrix = _controller.value;
     final translation = matrix.getTranslation();
 
-    // 現在の位置をグリッドサイズで割り、最も近いスナップ位置を計算
     final snappedX = (translation.x / _gridSize).round() * _gridSize;
     final snappedY = (translation.y / _gridSize).round() * _gridSize;
     final snappedPosition = Offset(snappedX, snappedY);
 
-    print("DEBUGG: snappedPosition: $snappedPosition");
-
-    // 前回のスナップ位置と異なる場合のみ更新
     if (snappedPosition != _lastSnappedPosition) {
       setState(() {
         _lastSnappedPosition = snappedPosition;
-        // _controller.value = Matrix4.identity()
-        //   ..translate(snappedX, snappedY)
-        //   ..scale(matrix.getMaxScaleOnAxis());
       });
 
-      // 触覚フィードバックを提供
       HapticFeedback.lightImpact();
     }
   }
@@ -119,8 +93,8 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
   Widget build(BuildContext context) {
     return InteractiveViewer(
       constrained: false,
-      scaleEnabled: false, // 拡大・縮小を無効化
-      panEnabled: true, // パン操作を有効化
+      scaleEnabled: false,
+      panEnabled: true,
       transformationController: _controller,
       onInteractionEnd: _onInteractionEnd,
       onInteractionUpdate: _onInteractionUpdate,

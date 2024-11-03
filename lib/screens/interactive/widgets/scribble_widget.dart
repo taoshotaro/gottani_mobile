@@ -149,13 +149,6 @@ class ScribbleWidget extends HookConsumerWidget {
           details.localPosition
         ],
       };
-
-      // points.value = [
-      //   ...points.value.length > 80
-      //       ? points.value.sublist(points.value.length - 80)
-      //       : points.value,
-      //   details.localPosition
-      // ];
     }
 
     // Remove scratch from id
@@ -201,20 +194,6 @@ class ScribbleWidget extends HookConsumerWidget {
             scratch.unique_id: _generateRandomColor(),
           };
         }
-
-        // points.value = [
-        //   ...points.value.length > 80
-        //       ? points.value.sublist(points.value.length - 80)
-        //       : points.value,
-        //   Offset(scratch.x, scratch.y)
-        // ];
-        // messageWidgets.add(
-        //   _PositionedScribbleWidget(
-        //     key: ValueKey(message.id),
-        //     message: message,
-        //   ),
-        // );
-        // setState(() {});
       });
     });
 
@@ -329,7 +308,7 @@ class ShakeRotationAnimation extends HookWidget {
       animation: animation,
       builder: (context, child) {
         return Transform.rotate(
-          angle: animation.value, // 少し回転
+          angle: animation.value,
           child: this.child,
         );
       },
