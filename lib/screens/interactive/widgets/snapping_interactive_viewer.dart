@@ -21,6 +21,7 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
     with SingleTickerProviderStateMixin {
   late final TransformationController _controller;
   late final double _gridSize;
+  double initialWidth = 0.0;
   Offset _lastSnappedPosition = Offset.zero;
   bool _interactive = false;
 
@@ -33,6 +34,14 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
     _controller = TransformationController();
     _gridSize = widget.gridSize;
     _ticker = createTicker(_onTick)..start();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (!context.mounted) {
+        return;
+      }
+      setState(() {
+        initialWidth = MediaQuery.of(context).size.width;
+      });
+    });
   }
 
   @override
@@ -117,7 +126,7 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
       onInteractionUpdate: _onInteractionUpdate,
       onInteractionStart: _onInteractionStart,
       child: Container(
-        width: MediaQuery.of(context).size.width + 200,
+        width: initialWidth + 200,
         height: MediaQuery.of(context).size.height +
             200 +
             _lastElapsed.inMilliseconds * _kScrollSpeed,

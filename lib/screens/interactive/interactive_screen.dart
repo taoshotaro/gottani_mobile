@@ -8,7 +8,6 @@ import 'package:gottani_mobile/models/message.dart';
 import 'package:gottani_mobile/repositories/message_repository.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/scribble_widget.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/snapping_interactive_viewer.dart';
-import 'package:gottani_mobile/screens/sample/input_message_dialog.dart';
 
 const _kVerticalInterval = 100.0;
 
@@ -24,9 +23,11 @@ class InteractiveScreen extends ConsumerStatefulWidget {
 }
 
 class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
-  late final Key viewerKey;
+  late final GlobalKey viewerKey;
   late final Random random;
   final List<Widget> messageWidgets = [];
+  double nextX = 0.0;
+  double nextY = 100.0;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
 
     unawaited(Future.microtask(() async {
       final messages = await ref.read(
-        latestMessagesProvider(5).future,
+        latestMessagesProvider(10).future,
       );
       if (!context.mounted) {
         return;
@@ -60,21 +61,19 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
     });
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: SnappingInteractiveViewer(
         key: viewerKey,
         children: messageWidgets,
       ),
-      floatingActionButton: ElevatedButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const InputMessageDialog();
-            },
-          );
-        },
-        child: Text('Show Dialog'),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(children: [
+          TextButton(
+            onPressed: () => ref
+                .read(messageRepositoryProvider)
+                .send('added: ${DateTime.now().toIso8601String()}'),
+            child: const Text('add'),
+          )
+        ]),
       ),
     );
   }
@@ -83,12 +82,22 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
     messageWidgets.add(
       _PositionedScribbleWidget(
         key: ValueKey(message.id),
-        left: random.nextDouble() * MediaQuery.of(context).size.width * 0.5,
-        top: (messageWidgets.length + 1) * _kVerticalInterval +
-            random.nextDouble() * _kVerticalInterval * 0.25,
+        left: nextX,
+        top: nextY,
         message: message,
       ),
     );
+
+    final renderBox =
+        viewerKey.currentContext?.findRenderObject() as RenderBox?;
+    final width = renderBox?.size.width ?? MediaQuery.of(context).size.width;
+
+    nextX += message.content.length * 15.0 + random.nextDouble() * 300.0;
+    nextY += (0.25 + random.nextDouble() * 0.1) * _kVerticalInterval;
+    if (nextX >= width * 0.9) {
+      nextX = random.nextDouble() * 200.0;
+      nextY += _kVerticalInterval * 0.75;
+    }
   }
 }
 
