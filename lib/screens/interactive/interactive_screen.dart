@@ -134,7 +134,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
 }
 
 @immutable
-class _PositionedScribbleWidget extends StatelessWidget {
+class _PositionedScribbleWidget extends ConsumerWidget {
   const _PositionedScribbleWidget({
     super.key,
     required this.message,
@@ -147,7 +147,7 @@ class _PositionedScribbleWidget extends StatelessWidget {
   final double top;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Positioned(
       left: left,
       top: top,
@@ -155,6 +155,7 @@ class _PositionedScribbleWidget extends StatelessWidget {
         id: message.id,
         content: message.content,
         initialHeat: message.heat,
+        isFire: ref.watch(selectedEmojiProvider) == '🔥',
       ),
     );
   }

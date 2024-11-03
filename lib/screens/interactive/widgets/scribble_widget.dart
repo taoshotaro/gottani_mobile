@@ -21,11 +21,13 @@ class ScribbleWidget extends HookConsumerWidget {
     required this.id,
     required this.content,
     required this.initialHeat,
+    required this.isFire,
   });
 
   final String id;
   final String content;
   final double initialHeat;
+  final bool isFire;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -241,6 +243,7 @@ class ScribbleWidget extends HookConsumerWidget {
                   CommentWidget(
                     text: content,
                     shadow: shouldAnimate.value,
+                    isFire: isFire,
                   ),
                   Gap(8),
                   ref.watch(messageEmojisStreamProvider(id)).when(
