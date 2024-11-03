@@ -87,9 +87,3 @@ flutter:
 
   assets:
     - assets/
-
-  fonts:
-    - family: Emoji
-      fonts:
-        - asset: assets/emoji.ttf
-          weight: 400
