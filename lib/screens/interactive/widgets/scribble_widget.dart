@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gottani_mobile/repositories/scratch_repository.dart';
+import 'package:gottani_mobile/screens/interactive/widgets/floating_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:gottani_mobile/features/thermal.dart';
 import 'package:gottani_mobile/screens/interactive/painter/glow_path_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/comment_widget.dart';
+import 'package:uuid/uuid.dart';
 
 class ScribbleWidget extends HookConsumerWidget {
   const ScribbleWidget({
@@ -33,6 +35,28 @@ class ScribbleWidget extends HookConsumerWidget {
       AppUuid.uuid: Color(0xFFFF4E4E),
     });
 
+    final floatingEmojis = useState<List<Widget>>([]);
+
+    void addFloatingEmoji(
+      Offset position, {
+      required String emojia,
+      required String uuid,
+    }) {
+      final emojif = FloatingEmoji(
+        key: ValueKey(uuid),
+        position: position,
+        emoji: emojia,
+      );
+      floatingEmojis.value = [...floatingEmojis.value, emojif];
+
+      // Remove emoji after animation ends
+      Future.delayed(const Duration(seconds: 2), () {
+        floatingEmojis.value = floatingEmojis.value
+            .where((e) => e != emojif)
+            .toList(); // Remove completed animation
+      });
+    }
+
     final throttler = useState(ThermalThrottler(
       onScratchBegan: (offset, time, deltaHeat) {
         unawaited(
@@ -42,6 +66,8 @@ class ScribbleWidget extends HookConsumerWidget {
         );
       },
       onScratchMoved: (offset, time, deltaHeat) async {
+        addFloatingEmoji(offset, emojia: '❤️', uuid: Uuid().v1());
+
         unawaited(
           ref
               .read(scrachRepositoryProvider)
@@ -137,6 +163,12 @@ class ScribbleWidget extends HookConsumerWidget {
           return;
         }
 
+        addFloatingEmoji(
+          Offset(scratch.x, scratch.y),
+          emojia: scratch.emoji,
+          uuid: scratch.id,
+        );
+
         final thisPoints = points.value[scratch.unique_id] ?? [];
 
         points.value = {
@@ -189,6 +221,7 @@ class ScribbleWidget extends HookConsumerWidget {
         ),
       },
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           AnimatedScale(
             scale: scale.value,
@@ -211,6 +244,7 @@ class ScribbleWidget extends HookConsumerWidget {
               ),
             ),
           ),
+          ...floatingEmojis.value,
         ],
       ),
     );
