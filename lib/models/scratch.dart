@@ -14,6 +14,7 @@ class Scratch with _$Scratch {
     required double heat_delta,
     required DateTime created_at,
     required String unique_id,
+    required int type,
   }) = _Scratch;
 
   factory Scratch.fromJson(Map<String, dynamic> json) =>

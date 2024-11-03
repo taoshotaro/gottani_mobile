@@ -28,10 +28,12 @@ class ScribbleWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scale = useState<double>(1);
-    // final points = useState<List<Offset>>([]);
     final points = useState<Map<String, List<Offset>>>({});
     final shakeOffset = useState<Offset>(Offset.zero);
     final shouldAnimate = useState(false);
+    final colors = useState<Map<String, Color>>({
+      AppUuid.uuid: Color(0xFFFF4E4E),
+    });
 
     final throttler = useState(ThermalThrottler(
       onScratchBegan: (offset, time, deltaHeat) {
@@ -43,13 +45,9 @@ class ScribbleWidget extends HookConsumerWidget {
       },
       onScratchMoved: (offset, time, deltaHeat) async {
         unawaited(
-          ref.read(scrachRepositoryProvider).createScratch(
-                id,
-                offset.dx,
-                offset.dy,
-                '❤️',
-                deltaHeat,
-              ),
+          ref
+              .read(scrachRepositoryProvider)
+              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 1),
         );
 
         if (deltaHeat > 0.2) {
@@ -60,6 +58,12 @@ class ScribbleWidget extends HookConsumerWidget {
       },
       onScratchEnded: (offset, time, deltaHeat) {
         shakeOffset.value = Offset.zero; // 振動を停止
+
+        unawaited(
+          ref
+              .read(scrachRepositoryProvider)
+              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 2),
+        );
       },
     ));
 
@@ -117,9 +121,22 @@ class ScribbleWidget extends HookConsumerWidget {
       // ];
     }
 
+    // Remove scratch from id
+    void removeScratch(String id) {
+      points.value = {
+        ...points.value,
+        id: [],
+      };
+    }
+
     ref.listen(scratchStreamByMessageIdProvider(id).future, (_, scratch) {
       scratch.then((scratch) {
         if (!context.mounted) {
+          return;
+        }
+
+        if (scratch.type == 2) {
+          removeScratch(scratch.unique_id);
           return;
         }
 
@@ -128,12 +145,19 @@ class ScribbleWidget extends HookConsumerWidget {
         points.value = {
           ...points.value,
           scratch.unique_id: [
-            ...thisPoints.length > 80
-                ? thisPoints.sublist(thisPoints.length - 80)
+            ...thisPoints.length > 15
+                ? thisPoints.sublist(thisPoints.length - 15)
                 : thisPoints,
             Offset(scratch.x, scratch.y)
           ],
         };
+
+        if (colors.value[scratch.unique_id] == null) {
+          colors.value = {
+            ...colors.value,
+            scratch.unique_id: _generateRandomColor(),
+          };
+        }
 
         // points.value = [
         //   ...points.value.length > 80
@@ -198,11 +222,24 @@ class ScribbleWidget extends HookConsumerWidget {
           Opacity(
             opacity: 0.5,
             child: CustomPaint(
-              painter: GlowPathPainter(points.value),
+              painter: MultiGlowPathPainter(
+                pointsMap: points.value,
+                colors: colors.value,
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  static Color _generateRandomColor() {
+    final random = Random();
+    return Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      1, // Set opacity to 0.5 for a glow effect
     );
   }
 }
