@@ -35,7 +35,7 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
     _controller = TransformationController();
     _gridSize = widget.gridSize;
     _ticker = createTicker(_onTick)..start();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPersistentFrameCallback((_) {
       if (!context.mounted) {
         return;
       }
