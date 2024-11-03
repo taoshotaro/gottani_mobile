@@ -27,7 +27,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
   late final Random random;
   final List<Widget> messageWidgets = [];
   double nextX = 0.0;
-  double nextY = 0.0;
+  double nextY = 100.0;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
 
     unawaited(Future.microtask(() async {
       final messages = await ref.read(
-        latestMessagesProvider(5).future,
+        latestMessagesProvider(10).future,
       );
       if (!context.mounted) {
         return;
@@ -92,11 +92,11 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
         viewerKey.currentContext?.findRenderObject() as RenderBox?;
     final width = renderBox?.size.width ?? MediaQuery.of(context).size.width;
 
-    nextX += message.content.length * 12.0 + random.nextDouble() * 200.0;
-    nextY += _kVerticalInterval * 0.1 * random.nextDouble() * 0.1;
+    nextX += message.content.length * 15.0 + random.nextDouble() * 300.0;
+    nextY += (0.25 + random.nextDouble() * 0.1) * _kVerticalInterval;
     if (nextX >= width * 0.9) {
       nextX = random.nextDouble() * 200.0;
-      nextY += _kVerticalInterval;
+      nextY += _kVerticalInterval * 0.75;
     }
   }
 }
