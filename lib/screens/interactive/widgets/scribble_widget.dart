@@ -23,12 +23,14 @@ class ScribbleWidget extends HookConsumerWidget {
     required this.content,
     required this.initialHeat,
     required this.isFire,
+    required this.onTap,
   });
 
   final String id;
   final String content;
   final double initialHeat;
   final bool isFire;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,6 +102,9 @@ class ScribbleWidget extends HookConsumerWidget {
     ));
 
     void onLongPressStart(LongPressStartDetails details) {
+      // TAP
+      onTap();
+
       throttler.value.start(details.localPosition, ThermalTime.now());
 
       HapticFeedback.lightImpact();

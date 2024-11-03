@@ -21,6 +21,7 @@ class MultiGlowPathPainter extends CustomPainter {
 
       final paint = Paint()
         ..color = colors[key] ?? Colors.white
+        ..blendMode = BlendMode.overlay
         ..strokeWidth = 15.0
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round;

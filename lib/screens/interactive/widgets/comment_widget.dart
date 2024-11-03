@@ -114,7 +114,13 @@ class CommentWidget extends HookWidget {
               blurRadius: 200, // 影のぼかし具合
               offset: Offset(0, 0), // 影の位置（x方向、y方向）
             ),
-          ],
+          ] else
+            BoxShadow(
+              color: Color.fromARGB(46, 0, 0, 0), // 影の色と透明度
+              spreadRadius: 0, // 影の広がり具合
+              blurRadius: 8, // 影のぼかし具合
+              offset: Offset(0, 0), // 影の位置（x方向、y方向）
+            ),
         ],
       ),
       child: Text(
