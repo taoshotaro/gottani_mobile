@@ -1,9 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:gap/gap.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/whiteout_widget.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
@@ -12,7 +11,7 @@ class CommentWidget extends HookWidget {
     super.key,
     this.shadow = false,
     required this.text,
-    this.isFire = true, // trueにすると爆発する
+    required this.isFire,
   });
 
   final bool shadow;
@@ -83,64 +82,49 @@ class CommentWidget extends HookWidget {
       return null;
     }, [shadowElapsed.value]);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 24,
-            horizontal: 32,
-          ),
-          decoration: BoxDecoration(
-            // color: shadow ? Color(0xffFFE1DA) : Colors.white,
-            color: Color.fromRGBO(255, 255 - secondWhiteShadowWhiting.value,
-                255 - secondWhiteShadowWhiting.value, 1),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-            ),
-            boxShadow: [
-              if (shadow)
-                BoxShadow(
-                  color: Color(0xffD24148), // 影の色と透明度
-                  spreadRadius: firstRedShadowSpreadRadius.value, // 影の広がり具合
-                  blurRadius: 200, // 影のぼかし具合
-                  offset: Offset(0, 0), // 影の位置（x方向、y方向）
-                ),
-              if (shadow)
-                BoxShadow(
-                  color: Color.fromRGBO(
-                    255,
-                    secondWhiteShadowWhiting.value,
-                    secondWhiteShadowWhiting.value,
-                    1,
-                  ), // 影の色と透明度
-                  spreadRadius: secondWhiteShadowSpreadRadius.value,
-                  blurRadius: 200, // 影のぼかし具合
-                  offset: Offset(0, 0), // 影の位置（x方向、y方向）
-                ),
-            ],
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: 24,
+        horizontal: 32,
+      ),
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(255, 255 - secondWhiteShadowWhiting.value,
+            255 - secondWhiteShadowWhiting.value, 1),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+          bottomRight: Radius.circular(16),
         ),
-        Gap(8),
-        Row(
-          children: [
-            Text("😎"),
-            Text("❤️"),
-            Text("🤘"),
-            Text("🔥"),
+        boxShadow: [
+          if (shadow) ...[
+            BoxShadow(
+              color: Color(0xffD24148), // 影の色と透明度
+              spreadRadius: firstRedShadowSpreadRadius.value, // 影の広がり具合
+              blurRadius: 200, // 影のぼかし具合
+              offset: Offset(0, 0), // 影の位置（x方向、y方向）
+            ),
+            BoxShadow(
+              color: Color.fromRGBO(
+                255,
+                secondWhiteShadowWhiting.value,
+                secondWhiteShadowWhiting.value,
+                1,
+              ), // 影の色と透明度
+              spreadRadius: secondWhiteShadowSpreadRadius.value,
+              blurRadius: 200, // 影のぼかし具合
+              offset: Offset(0, 0), // 影の位置（x方向、y方向）
+            ),
           ],
+        ],
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
-      ],
+      ),
     );
   }
 }

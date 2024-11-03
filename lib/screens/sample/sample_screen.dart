@@ -35,7 +35,9 @@ class SampleScreen extends ConsumerWidget {
               width: 0.0,
               height: 20.0,
             ),
-            IconScrollBar(),
+            IconScrollBar(
+              onEmojiSelected: (emoji) {},
+            ),
           ],
         ),
       ),

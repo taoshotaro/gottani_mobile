@@ -5,9 +5,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gottani_mobile/models/message.dart';
+import 'package:gottani_mobile/repositories/message_emojis_repository.dart';
 import 'package:gottani_mobile/repositories/message_repository.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/scribble_widget.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/snapping_interactive_viewer.dart';
+import 'package:gottani_mobile/screens/sample/icon_scroll_bar.dart';
+import 'package:gottani_mobile/screens/sample/input_message_dialog.dart';
 
 const _kVerticalInterval = 100.0;
 
@@ -61,19 +64,48 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
     });
 
     return Scaffold(
-      body: SnappingInteractiveViewer(
-        key: viewerKey,
-        children: messageWidgets,
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(children: [
-          TextButton(
-            onPressed: () => ref
-                .read(messageRepositoryProvider)
-                .send('added: ${DateTime.now().toIso8601String()}'),
-            child: const Text('add'),
-          )
-        ]),
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          SnappingInteractiveViewer(
+            key: viewerKey,
+            children: messageWidgets,
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: IconScrollBar(
+                onEmojiSelected: (emoji) {
+                  ref.read(selectedEmojiProvider.notifier).state = emoji;
+                },
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 100,
+            right: 0,
+            child: SafeArea(
+              child: FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                backgroundColor: Color(0xff1653F0),
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const InputMessageDialog();
+                    },
+                  );
+                },
+                child: Icon(Icons.add_rounded, size: 32),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -102,7 +134,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
 }
 
 @immutable
-class _PositionedScribbleWidget extends StatelessWidget {
+class _PositionedScribbleWidget extends ConsumerWidget {
   const _PositionedScribbleWidget({
     super.key,
     required this.message,
@@ -115,7 +147,7 @@ class _PositionedScribbleWidget extends StatelessWidget {
   final double top;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Positioned(
       left: left,
       top: top,
@@ -123,6 +155,7 @@ class _PositionedScribbleWidget extends StatelessWidget {
         id: message.id,
         content: message.content,
         initialHeat: message.heat,
+        isFire: ref.watch(selectedEmojiProvider) == '🔥',
       ),
     );
   }

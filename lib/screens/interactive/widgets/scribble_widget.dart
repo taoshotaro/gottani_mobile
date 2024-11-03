@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gottani_mobile/repositories/scratch_repository.dart';
+import 'package:gottani_mobile/screens/interactive/widgets/floating_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:gottani_mobile/features/thermal.dart';
+import 'package:gottani_mobile/repositories/message_emojis_repository.dart';
 import 'package:gottani_mobile/screens/interactive/painter/glow_path_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/comment_widget.dart';
+import 'package:uuid/uuid.dart';
 
 class ScribbleWidget extends HookConsumerWidget {
   const ScribbleWidget({
@@ -17,11 +21,13 @@ class ScribbleWidget extends HookConsumerWidget {
     required this.id,
     required this.content,
     required this.initialHeat,
+    required this.isFire,
   });
 
   final String id;
   final String content;
   final double initialHeat;
+  final bool isFire;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,19 +39,44 @@ class ScribbleWidget extends HookConsumerWidget {
       AppUuid.uuid: Color(0xFFFF4E4E),
     });
 
+    final floatingEmojis = useState<List<Widget>>([]);
+
+    void addFloatingEmoji(
+      Offset position, {
+      required String emojia,
+      required String uuid,
+    }) {
+      final emojif = FloatingEmoji(
+        key: ValueKey(uuid),
+        position: position,
+        emoji: emojia,
+      );
+      floatingEmojis.value = [...floatingEmojis.value, emojif];
+
+      // Remove emoji after animation ends
+      Future.delayed(const Duration(seconds: 2), () {
+        floatingEmojis.value = floatingEmojis.value
+            .where((e) => e != emojif)
+            .toList(); // Remove completed animation
+      });
+    }
+
     final throttler = useState(ThermalThrottler(
       onScratchBegan: (offset, time, deltaHeat) {
+        final emoji = ref.read(selectedEmojiProvider);
+
         unawaited(
-          ref
-              .read(scrachRepositoryProvider)
-              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 0),
+          ref.read(messageEmojisRepositoryProvider).send(id, emoji),
         );
       },
       onScratchMoved: (offset, time, deltaHeat) async {
+        final emoji = ref.read(selectedEmojiProvider);
+        addFloatingEmoji(offset, emojia: emoji, uuid: Uuid().v1());
+
         unawaited(
           ref
               .read(scrachRepositoryProvider)
-              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 1),
+              .createScratch(id, offset.dx, offset.dy, emoji, deltaHeat, 1),
         );
 
         if (deltaHeat > 0.2) {
@@ -55,12 +86,14 @@ class ScribbleWidget extends HookConsumerWidget {
         }
       },
       onScratchEnded: (offset, time, deltaHeat) {
+        final emoji = ref.read(selectedEmojiProvider);
+
         shakeOffset.value = Offset.zero; // 振動を停止
 
         unawaited(
           ref
               .read(scrachRepositoryProvider)
-              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 2),
+              .createScratch(id, offset.dx, offset.dy, emoji, deltaHeat, 2),
         );
       },
     ));
@@ -69,6 +102,7 @@ class ScribbleWidget extends HookConsumerWidget {
       throttler.value.start(details.localPosition, ThermalTime.now());
 
       HapticFeedback.lightImpact();
+
       scale.value = 1.2;
     }
 
@@ -137,6 +171,12 @@ class ScribbleWidget extends HookConsumerWidget {
           return;
         }
 
+        addFloatingEmoji(
+          Offset(scratch.x, scratch.y),
+          emojia: scratch.emoji,
+          uuid: scratch.id,
+        );
+
         final thisPoints = points.value[scratch.unique_id] ?? [];
 
         points.value = {
@@ -189,6 +229,7 @@ class ScribbleWidget extends HookConsumerWidget {
         ),
       },
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           AnimatedScale(
             scale: scale.value,
@@ -196,9 +237,24 @@ class ScribbleWidget extends HookConsumerWidget {
             curve: Curves.easeOut, // アニメーションのカーブ
             child: ShakeRotationAnimation(
               shouldAnimate: shouldAnimate,
-              child: CommentWidget(
-                text: content,
-                shadow: shouldAnimate.value,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommentWidget(
+                    text: content,
+                    shadow: shouldAnimate.value,
+                    isFire: isFire,
+                  ),
+                  Gap(8),
+                  ref.watch(messageEmojisStreamProvider(id)).when(
+                        data: (emojis) => Row(
+                          children:
+                              emojis.map((emoji) => Text(emoji.emoji)).toList(),
+                        ),
+                        error: (error, stack) => Text(''),
+                        loading: () => Text(''),
+                      ),
+                ],
               ),
             ),
           ),
@@ -211,6 +267,7 @@ class ScribbleWidget extends HookConsumerWidget {
               ),
             ),
           ),
+          ...floatingEmojis.value,
         ],
       ),
     );
@@ -233,11 +290,11 @@ class ShakeRotationAnimation extends HookWidget {
   final ValueNotifier<bool> shouldAnimate;
 
   const ShakeRotationAnimation({
-    Key? key,
+    super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 300),
     required this.shouldAnimate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
