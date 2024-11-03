@@ -38,7 +38,7 @@ class ScribbleWidget extends HookConsumerWidget {
     final shakeOffset = useState<Offset>(Offset.zero);
     final shouldAnimate = useState(false);
     final colors = useState<Map<String, Color>>({
-      AppUuid.uuid: Color(0xFFFF4E4E),
+      AppUuid.uuid: Color.fromARGB(127, 255, 78, 78),
     });
 
     final floatingEmojis = useState<List<Widget>>([]);
@@ -264,7 +264,7 @@ class ScribbleWidget extends HookConsumerWidget {
             ),
           ),
           Opacity(
-            opacity: 0.5,
+            opacity: 1,
             child: CustomPaint(
               painter: MultiGlowPathPainter(
                 pointsMap: points.value,
@@ -284,7 +284,7 @@ class ScribbleWidget extends HookConsumerWidget {
       random.nextInt(256),
       random.nextInt(256),
       random.nextInt(256),
-      1, // Set opacity to 0.5 for a glow effect
+      0.5, // Set opacity to 0.5 for a glow effect
     );
   }
 }
