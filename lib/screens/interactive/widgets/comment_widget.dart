@@ -103,10 +103,10 @@ class CommentWidget extends HookWidget {
         boxShadow: [
           if (shadow) ...[
             BoxShadow(
-              color: Color(0xffD24148), // 影の色と透明度
-              spreadRadius: firstRedShadowSpreadRadius.value, // 影の広がり具合
-              blurRadius: 200, // 影のぼかし具合
-              offset: Offset(0, 0), // 影の位置（x方向、y方向）
+              color: Color(0xffD24148),
+              spreadRadius: firstRedShadowSpreadRadius.value,
+              blurRadius: 200,
+              offset: Offset(0, 0),
             ),
             BoxShadow(
               color: Color.fromRGBO(
@@ -114,17 +114,17 @@ class CommentWidget extends HookWidget {
                 secondWhiteShadowWhiting.value,
                 secondWhiteShadowWhiting.value,
                 1,
-              ), // 影の色と透明度
+              ),
               spreadRadius: secondWhiteShadowSpreadRadius.value,
-              blurRadius: 200, // 影のぼかし具合
-              offset: Offset(0, 0), // 影の位置（x方向、y方向）
+              blurRadius: 200,
+              offset: Offset(0, 0),
             ),
           ] else
             BoxShadow(
-              color: Color.fromARGB(46, 0, 0, 0), // 影の色と透明度
-              spreadRadius: 0, // 影の広がり具合
-              blurRadius: 8, // 影のぼかし具合
-              offset: Offset(0, 0), // 影の位置（x方向、y方向）
+              color: Color.fromARGB(46, 0, 0, 0),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: Offset(0, 0),
             ),
         ],
       ),
