@@ -8,7 +8,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gottani_mobile/repositories/scratch_repository.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/floating_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:gottani_mobile/features/thermal.dart';
+import 'package:gottani_mobile/repositories/message_emojis_repository.dart';
 import 'package:gottani_mobile/screens/interactive/painter/glow_path_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/comment_widget.dart';
 import 'package:uuid/uuid.dart';
@@ -59,10 +61,10 @@ class ScribbleWidget extends HookConsumerWidget {
 
     final throttler = useState(ThermalThrottler(
       onScratchBegan: (offset, time, deltaHeat) {
+        final emoji = ref.read(selectedEmojiProvider);
+
         unawaited(
-          ref
-              .read(scrachRepositoryProvider)
-              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 0),
+          ref.read(messageEmojisRepositoryProvider).send(id, emoji),
         );
       },
       onScratchMoved: (offset, time, deltaHeat) async {
@@ -95,6 +97,7 @@ class ScribbleWidget extends HookConsumerWidget {
       throttler.value.start(details.localPosition, ThermalTime.now());
 
       HapticFeedback.lightImpact();
+
       scale.value = 1.2;
     }
 
@@ -229,9 +232,23 @@ class ScribbleWidget extends HookConsumerWidget {
             curve: Curves.easeOut, // アニメーションのカーブ
             child: ShakeRotationAnimation(
               shouldAnimate: shouldAnimate,
-              child: CommentWidget(
-                text: content,
-                shadow: shouldAnimate.value,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommentWidget(
+                    text: content,
+                    shadow: shouldAnimate.value,
+                  ),
+                  Gap(8),
+                  ref.watch(messageEmojisStreamProvider(id)).when(
+                        data: (emojis) => Row(
+                          children:
+                              emojis.map((emoji) => Text(emoji.emoji)).toList(),
+                        ),
+                        error: (error, stack) => Text(''),
+                        loading: () => Text(''),
+                      ),
+                ],
               ),
             ),
           ),
@@ -267,11 +284,11 @@ class ShakeRotationAnimation extends HookWidget {
   final ValueNotifier<bool> shouldAnimate;
 
   const ShakeRotationAnimation({
-    Key? key,
+    super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 300),
     required this.shouldAnimate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
