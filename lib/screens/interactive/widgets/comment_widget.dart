@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
@@ -62,7 +63,9 @@ class CommentWidget extends HookWidget {
       final lastWhiteOutDelay = 30;
       if (shadowElapsed.value > lastWhiteOutDelay) {
         Future(() async {
-          await ScreenBrightness().setApplicationScreenBrightness(1);
+          if (!kIsWeb) {
+            await ScreenBrightness().setApplicationScreenBrightness(1);
+          }
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
@@ -76,7 +79,9 @@ class CommentWidget extends HookWidget {
             await Future.delayed(Duration(milliseconds: 10));
             HapticFeedback.heavyImpact();
           }
-          await ScreenBrightness().resetApplicationScreenBrightness();
+          if (!kIsWeb) {
+            await ScreenBrightness().resetApplicationScreenBrightness();
+          }
         });
       }
       return null;
