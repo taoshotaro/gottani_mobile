@@ -142,8 +142,8 @@ class ScribbleWidget extends HookConsumerWidget {
         points.value = {
           ...points.value,
           scratch.unique_id: [
-            ...thisPoints.length > 80
-                ? thisPoints.sublist(thisPoints.length - 80)
+            ...thisPoints.length > 15
+                ? thisPoints.sublist(thisPoints.length - 15)
                 : thisPoints,
             Offset(scratch.x, scratch.y)
           ],
