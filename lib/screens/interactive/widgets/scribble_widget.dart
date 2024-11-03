@@ -81,7 +81,7 @@ class ScribbleWidget extends HookConsumerWidget {
       shouldAnimate.value = false;
 
       scale.value = 1.0;
-      points.value = [];
+      points.value = {};
       shakeOffset.value = Offset.zero;
     }
 

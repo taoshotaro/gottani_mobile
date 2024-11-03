@@ -1,38 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:gottani_mobile/screens/interactive/painter/grid_dots_painter.dart';
+
+const _kScrollSpeed = 0.01;
 
 class SnappingInteractiveViewer extends StatefulWidget {
-  final Widget child;
+  final List<Widget> children;
   final double gridSize;
 
   SnappingInteractiveViewer(
-      {super.key, required this.child, this.gridSize = 46.0});
+      {super.key, required this.children, this.gridSize = 46.0});
 
   @override
   _SnappingInteractiveViewerState createState() =>
       _SnappingInteractiveViewerState();
 }
 
-class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
-  late TransformationController _controller;
-  late double _gridSize;
+class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
+    with SingleTickerProviderStateMixin {
+  late final TransformationController _controller;
+  late final double _gridSize;
   Offset _lastSnappedPosition = Offset.zero;
+  bool _interactive = false;
+
+  late final Ticker _ticker;
+  Duration _lastElapsed = Duration.zero;
 
   @override
   void initState() {
     super.initState();
     _controller = TransformationController();
     _gridSize = widget.gridSize;
+    _ticker = createTicker(_onTick)..start();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _ticker.dispose();
     super.dispose();
+  }
+
+  void _onInteractionStart(ScaleStartDetails details) {
+    print("DEBUGG: _onInteractionStart");
+    _interactive = true;
   }
 
   void _onInteractionEnd(ScaleEndDetails details) {
     print("DEBUGG: _onInteractionEnd");
+    _interactive = false;
 
     // final matrix = _controller.value;
     // final translation = matrix.getTranslation();
@@ -76,6 +93,19 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
     }
   }
 
+  void _onTick(Duration elapsed) {
+    if (!_interactive) {
+      _controller.value *= Matrix4.translationValues(
+        0,
+        (elapsed - _lastElapsed).inMilliseconds * -_kScrollSpeed,
+        0,
+      );
+    }
+    setState(() {
+      _lastElapsed = elapsed;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return InteractiveViewer(
@@ -85,7 +115,18 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer> {
       transformationController: _controller,
       onInteractionEnd: _onInteractionEnd,
       onInteractionUpdate: _onInteractionUpdate,
-      child: widget.child,
+      onInteractionStart: _onInteractionStart,
+      child: Container(
+        width: MediaQuery.of(context).size.width + 200,
+        height: MediaQuery.of(context).size.height +
+            200 +
+            _lastElapsed.inMilliseconds * _kScrollSpeed,
+        color: Colors.black,
+        child: CustomPaint(
+          painter: GridDotsPainter(),
+          child: Stack(children: widget.children),
+        ),
+      ),
     );
   }
 }
