@@ -86,7 +86,7 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
           ),
           Positioned(
             bottom: 100,
-            right: 0,
+            right: 18,
             child: SafeArea(
               child: FloatingActionButton(
                 shape: RoundedRectangleBorder(
