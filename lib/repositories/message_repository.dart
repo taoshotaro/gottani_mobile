@@ -22,6 +22,12 @@ Stream<Message> newMessageStream(Ref ref) {
             streamController.add(Message.fromJson(payload.newRecord));
           })
       .subscribe();
+  streamController.add(Message(
+    content: '',
+    id: '',
+    heat: 0,
+    created_at: DateTime.now(),
+  ));
 
   ref.onDispose(() {
     unawaited(subscription.unsubscribe());
@@ -34,7 +40,8 @@ Stream<Message> newMessageStream(Ref ref) {
 @riverpod
 Future<List<Message>> latestMessages(Ref ref, int count) async {
   final supabase = ref.watch(supabaseClientProvider);
-  final response = await supabase.from('message').select().limit(count);
+  final response =
+      await supabase.from('message').select().order('created_at').limit(count);
   return response.map((json) => Message.fromJson(json)).toList();
 }
 

@@ -46,21 +46,22 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
         return;
       }
 
-      messages.forEach(_pushMessage);
-      setState(() {});
+      setState(() {
+        messages.forEach(_pushMessage);
+      });
     }));
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen(newMessageStreamProvider.future, (_, message) {
-      message.then((message) {
-        if (!context.mounted) {
+      unawaited(message.then((message) async {
+        if (!context.mounted || message.content.isEmpty) {
           return;
         }
         _pushMessage(message);
         setState(() {});
-      });
+      }));
     });
 
     return Scaffold(
@@ -124,8 +125,9 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
           );
           messageWidgets
               .removeWhere((widget) => widget.key == ValueKey(message.id));
-          messageWidgets.add(widget);
-          setState(() {});
+          setState(() {
+            messageWidgets.add(widget);
+          });
         },
       ),
     );
