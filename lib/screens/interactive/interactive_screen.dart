@@ -117,6 +117,16 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
         left: nextX,
         top: nextY,
         message: message,
+        onTap: () {
+          // Bring current message to the front
+          final widget = messageWidgets.firstWhere(
+            (widget) => widget.key == ValueKey(message.id),
+          );
+          messageWidgets
+              .removeWhere((widget) => widget.key == ValueKey(message.id));
+          messageWidgets.add(widget);
+          setState(() {});
+        },
       ),
     );
 
@@ -140,11 +150,13 @@ class _PositionedScribbleWidget extends ConsumerWidget {
     required this.message,
     required this.left,
     required this.top,
+    required this.onTap,
   });
 
   final Message message;
   final double left;
   final double top;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -156,6 +168,7 @@ class _PositionedScribbleWidget extends ConsumerWidget {
         content: message.content,
         initialHeat: message.heat,
         isFire: ref.watch(selectedEmojiProvider) == '🔥',
+        onTap: onTap,
       ),
     );
   }

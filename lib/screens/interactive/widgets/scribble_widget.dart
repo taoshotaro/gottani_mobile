@@ -22,12 +22,14 @@ class ScribbleWidget extends HookConsumerWidget {
     required this.content,
     required this.initialHeat,
     required this.isFire,
+    required this.onTap,
   });
 
   final String id;
   final String content;
   final double initialHeat;
   final bool isFire;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +38,7 @@ class ScribbleWidget extends HookConsumerWidget {
     final shakeOffset = useState<Offset>(Offset.zero);
     final shouldAnimate = useState(false);
     final colors = useState<Map<String, Color>>({
-      AppUuid.uuid: Color(0xFFFF4E4E),
+      AppUuid.uuid: Color.fromARGB(127, 255, 78, 78),
     });
 
     final floatingEmojis = useState<List<Widget>>([]);
@@ -99,6 +101,9 @@ class ScribbleWidget extends HookConsumerWidget {
     ));
 
     void onLongPressStart(LongPressStartDetails details) {
+      // TAP
+      onTap();
+
       throttler.value.start(details.localPosition, ThermalTime.now());
 
       HapticFeedback.lightImpact();
@@ -259,7 +264,7 @@ class ScribbleWidget extends HookConsumerWidget {
             ),
           ),
           Opacity(
-            opacity: 0.5,
+            opacity: 1,
             child: CustomPaint(
               painter: MultiGlowPathPainter(
                 pointsMap: points.value,
@@ -279,7 +284,7 @@ class ScribbleWidget extends HookConsumerWidget {
       random.nextInt(256),
       random.nextInt(256),
       random.nextInt(256),
-      1, // Set opacity to 0.5 for a glow effect
+      0.5, // Set opacity to 0.5 for a glow effect
     );
   }
 }
