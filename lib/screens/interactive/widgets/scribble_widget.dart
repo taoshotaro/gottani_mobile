@@ -68,12 +68,13 @@ class ScribbleWidget extends HookConsumerWidget {
         );
       },
       onScratchMoved: (offset, time, deltaHeat) async {
-        addFloatingEmoji(offset, emojia: '❤️', uuid: Uuid().v1());
+        final emoji = ref.read(selectedEmojiProvider);
+        addFloatingEmoji(offset, emojia: emoji, uuid: Uuid().v1());
 
         unawaited(
           ref
               .read(scrachRepositoryProvider)
-              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 1),
+              .createScratch(id, offset.dx, offset.dy, emoji, deltaHeat, 1),
         );
 
         if (deltaHeat > 0.2) {
@@ -83,12 +84,14 @@ class ScribbleWidget extends HookConsumerWidget {
         }
       },
       onScratchEnded: (offset, time, deltaHeat) {
+        final emoji = ref.read(selectedEmojiProvider);
+
         shakeOffset.value = Offset.zero; // 振動を停止
 
         unawaited(
           ref
               .read(scrachRepositoryProvider)
-              .createScratch(id, offset.dx, offset.dy, '❤️', deltaHeat, 2),
+              .createScratch(id, offset.dx, offset.dy, emoji, deltaHeat, 2),
         );
       },
     ));

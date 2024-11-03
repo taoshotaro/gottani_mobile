@@ -24,7 +24,7 @@ class _FloatingEmojiState extends State<FloatingEmoji>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       vsync: this,
     );
 
