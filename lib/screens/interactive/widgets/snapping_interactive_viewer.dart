@@ -3,7 +3,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:gottani_mobile/screens/interactive/painter/grid_dots_painter.dart';
 
-const _kScrollSpeed = 0.01;
+// const _kScrollSpeed = 0.01;
+const _kScrollSpeed = 0.0;
 
 class SnappingInteractiveViewer extends StatefulWidget {
   final List<Widget> children;
