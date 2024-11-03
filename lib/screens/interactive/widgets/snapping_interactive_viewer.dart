@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -102,7 +103,7 @@ class _SnappingInteractiveViewerState extends State<SnappingInteractiveViewer>
       child: Container(
         width: initialWidth + 200,
         height: MediaQuery.of(context).size.height +
-            200 +
+            (kIsWeb ? 2500 : 200) +
             _lastElapsed.inMilliseconds * _kScrollSpeed,
         color: Colors.black,
         child: CustomPaint(
