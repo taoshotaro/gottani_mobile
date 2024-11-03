@@ -84,11 +84,11 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
               ),
             ),
           ),
-          SafeArea(
-            child: Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
               child: IconScrollBar(
                 onEmojiSelected: (emoji) {
                   ref.read(selectedEmojiProvider.notifier).state = emoji;
@@ -96,18 +96,29 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
               ),
             ),
           ),
+          Positioned(
+            bottom: 100,
+            right: 0,
+            child: SafeArea(
+              child: FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                backgroundColor: Color(0xff1653F0),
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const InputMessageDialog();
+                    },
+                  );
+                },
+                child: Icon(Icons.add_rounded, size: 32),
+              ),
+            ),
+          ),
         ],
-      ),
-      floatingActionButton: ElevatedButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const InputMessageDialog();
-            },
-          );
-        },
-        child: Text('Show Dialog'),
       ),
     );
   }
