@@ -5,10 +5,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gottani_mobile/models/message.dart';
+import 'package:gottani_mobile/repositories/message_emojis_repository.dart';
 import 'package:gottani_mobile/repositories/message_repository.dart';
 import 'package:gottani_mobile/screens/interactive/painter/grid_dots_painter.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/scribble_widget.dart';
 import 'package:gottani_mobile/screens/interactive/widgets/snapping_interactive_viewer.dart';
+import 'package:gottani_mobile/screens/sample/icon_scroll_bar.dart';
 import 'package:gottani_mobile/screens/sample/input_message_dialog.dart';
 
 @immutable
@@ -68,17 +70,33 @@ class InteractiveScreenState extends ConsumerState<InteractiveScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SnappingInteractiveViewer(
-        key: viewerKey,
-        child: Container(
-          width: MediaQuery.of(context).size.width + 200,
-          height: MediaQuery.of(context).size.height + 200,
-          color: Colors.black,
-          child: CustomPaint(
-            painter: GridDotsPainter(),
-            child: Stack(children: messageWidgets),
+      body: Stack(
+        children: [
+          SnappingInteractiveViewer(
+            key: viewerKey,
+            child: Container(
+              width: MediaQuery.of(context).size.width + 200,
+              height: MediaQuery.of(context).size.height + 200,
+              color: Colors.black,
+              child: CustomPaint(
+                painter: GridDotsPainter(),
+                child: Stack(children: messageWidgets),
+              ),
+            ),
           ),
-        ),
+          SafeArea(
+            child: Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: IconScrollBar(
+                onEmojiSelected: (emoji) {
+                  ref.read(selectedEmojiProvider.notifier).state = emoji;
+                },
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
