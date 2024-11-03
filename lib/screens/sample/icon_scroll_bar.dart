@@ -51,8 +51,8 @@ class IconScrollBar extends HookWidget {
       }
     }
 
-    final position = useState(0.0);
-    final currentPage = useState(0);
+    final position = useState(3.0);
+    final currentPage = useState(3);
 
     controller.addListener(() {
       double previousValue = position.value % 1;
@@ -91,7 +91,11 @@ class IconScrollBar extends HookWidget {
             String emoji = entry.$2;
             return GestureDetector(
               onTap: () {
-                controller.jumpToPage(index);
+                controller.animateToPage(
+                  index,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
               },
               child: Transform.scale(
                 scale: calculateEmojiScale(index, position.value) - 0.35,
