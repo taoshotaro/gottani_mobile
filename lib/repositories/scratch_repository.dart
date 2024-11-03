@@ -64,6 +64,7 @@ class ScratchRepository {
     double y,
     String emoji,
     double heatDelta,
+    int type,
   ) async {
     final response = await supabase.from('scratch').insert({
       'message_id': messageId,
@@ -73,6 +74,7 @@ class ScratchRepository {
       'heat_delta': heatDelta,
       'created_at': DateTime.now().toIso8601String(),
       'unique_id': AppUuid.uuid,
+      'type': type,
     });
   }
 }
